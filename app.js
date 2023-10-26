@@ -1,4 +1,4 @@
-const socket = new WebSocket("ws://192.168.86.21:4000/socket/websocket?vsn=2.0.0");
+const socket = new WebSocket("ws://localhost:4000/socket/websocket?vsn=2.0.0");
 // const socket = new WebSocket("ws://localhost:4000/socket/websocket?vsn=2.0.0");
 
 // Connection opened
@@ -8,11 +8,23 @@ socket.addEventListener("open", (event) => {
 });
 
 socket.addEventListener("message", (event) => {
-    var message = JSON.parse(event.data).pop();
+    var data = JSON.parse(event.data);
+    let join_reference, message_reference, topic_name, event_name, payload;
+
+    [join_reference, message_reference, topic_name, event_name, payload] = data;
+
+
     var elem = document.getElementById("chat_history");
 
-    if ("message" in message.response) {
-        elem.append(message.response.message + "\n");
+    // console.log(data);
+    console.log(event_name);
+    console.log(payload);
+
+    if (event_name == "shout") {
+        elem.append(payload.response.message + "\n");
+    } else if (event_name == "ident") {
+	      var transmission = ["user", "0", "room:lobby", "present", {"user": "blaha"}];
+        socket.send(JSON.stringify(transmission));
     }
 });
 
